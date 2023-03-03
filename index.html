@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>baymard guidelines</title>
+	<script src="mapping.json"></script>
+
+	<script>
+		
+		/* baymard scripts => 
+
+			// image view
+
+			window.addEventListener('mousedown', (e) => {
+			    if(e.srcElement instanceof HTMLImageElement) {
+			        window.open(e.srcElement.src, '_blank').focus();
+			    }
+			})
+
+
+			// linking
+			Array.from(document.getElementsByTagName('a')).filter(a => a.href.includes('guideline-collections/')).filter(a => a.href.split('/').length === 7).forEach(a => {a.href = a.href.split('/')[6].split('#')[0] + '.html'})
+
+		*/
+
+
+		function updateCounterPrev() {
+			const c = document.getElementById('counter');
+			c.innerText = shownLinks+'/'+linkList.length;
+		}
+
+		const linkList = [];
+		let shownLinks = 0;
+		function addLink(link, title) {
+			const linkTag = document.createElement('a');
+			linkTag.href = link;
+			linkTag.innerText = title;
+			linkList.push(linkTag);
+			document.body.appendChild(linkTag);
+		}
+		window.onload = () => {
+			for(const l of file_mappings) {
+				addLink('files/'+l.file, l.title);
+			}
+			shownLinks = linkList.length;
+			updateCounterPrev();
+		}
+	
+		function search(e) {
+			shownLinks = 0;
+			for(const tag of linkList) {
+				if(!tag.innerText.toLowerCase().includes(e.toLowerCase())) {
+					tag.style.display = 'none';
+				} else {
+					shownLinks++;
+					const start = tag.innerText.toLowerCase().indexOf(e.toLowerCase());
+					const end = start + e.length;
+					const highlighted = tag.innerText.substring(0, start) + '<span class="highlighted">'+tag.innerText.substring(start, end)+'</span>'+tag.innerText.substring(end);
+					tag.innerHTML = highlighted;
+					tag.style.display = 'inline-block';
+				}
+			}
+			updateCounterPrev();
+		}
+
+	</script>
+
+	<style>
+		body, html {
+
+			margin: 0;
+			background: #394561;
+			max-width: 800px;
+			margin: auto;
+		}
+
+		a {
+			background: #b2bcd6;
+			display: inline-block;
+			padding: 10px;
+			margin: 10px;
+			border: 1px solid #0005;
+			border-radius: 10px;
+			font-family: sans-serif;
+			color: #000;
+			text-decoration: none;
+			box-shadow: 2px 2px 5px #0003;
+			transition: 0.2s;
+			width: 300px;
+		}
+
+		a:hover {
+			cursor: pointer;
+			transform: scale(1.02);
+			box-shadow: 2px 2px 10px #0006;
+		}
+		.placeholder {
+			height: 90px;
+
+		}
+		.searchbar {
+			z-index: 1000;
+			position: fixed;
+			top: 0;
+			left: 0;
+			background: #0d2666;
+			width: 100%;
+			box-shadow: 0 0 10px #000b;
+		}
+
+		.searchbar-nav {
+			max-width: 800px;
+			margin: 20px auto;
+
+		    display: flex;
+		    align-items: center;
+		    gap: 30px;
+		}
+
+		.searchbar-nav input {
+			border: 2px solid #0006;
+		    text-decoration: none;
+		    padding: 3px 3px 3px 10px;
+		    outline: none;
+		    min-width: 200px;
+		    border-radius: 20px;
+		}
+
+		#counter {
+			font-family: sans-serif;
+			font-weight: bold;
+			color: #fff;
+		}
+
+		.highlighted {
+			background: yellow;
+		}
+	</style>
+
+</head>
+<body>
+
+<div class="placeholder"></div>
+<div class="searchbar">
+	<div class="searchbar-nav">
+		<input type="text" placeholder="suchen..." name="search" oninput="search(this.value)">
+		<div id="counter"></div>
+	</div>
+</div>
+
+</body>
+</html>
